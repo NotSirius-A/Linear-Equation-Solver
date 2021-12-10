@@ -102,7 +102,7 @@ class App():
         coefficients = np.array(coefficients_all)
 
         constants_all = [x['constant'] for x in equations]
-        constants = np.array(equations)
+        constants = np.array(constants_all)
 
         matrices = {
             "coefficients": coefficients,
@@ -111,6 +111,24 @@ class App():
         }
 
         return matrices
+
+    def solve_cramer_method(self, matrices):
+        solution = []
+
+        main_determinant = np.linalg.det(matrices["coefficients"])
+
+        for index, var in enumerate(matrices['variables']):
+            substituted_matrix = matrices["coefficients"].copy()
+            substituted_matrix[:, index] = matrices["constants"]
+
+            partial_determinant = np.linalg.det(substituted_matrix)
+            
+            var_value = (partial_determinant/main_determinant)
+
+            solution.append([var, partial_determinant])
+
+        return solution
+
         
 
 if __name__ == "__main__":
@@ -125,4 +143,6 @@ if __name__ == "__main__":
 
     equations = app.analyze_equations(equations)
 
-    app.get_matrices(equations)
+    matrices = app.get_matrices(equations)
+
+    app.solve_cramer_method(matrices)
