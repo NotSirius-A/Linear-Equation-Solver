@@ -2,7 +2,7 @@ import re
 import itertools
 import numpy as np
 
-class App():
+class Solver():
     def __init__(self) -> None:
         pass
 
@@ -51,10 +51,20 @@ class App():
         return False
 
     def convert_equation_to_computer_format(self, equation) -> dict:
-        coefficients = re.findall(r'[.\,\0-9\-\+]+', equation)
+        coefficients_raw = [x for x in re.split('[A-Za-z]', equation)]
 
-        # Replacing ',' with dots, so that user can also use commas for decimal numbers
-        coefficients = [x.replace(',', '.') for x in coefficients]
+        coefficients_raw = [x.replace(',', '.').replace('=', '') for x in coefficients_raw]
+
+        coefficients = []
+        for x in coefficients_raw:
+            if (x == "+") or (x == ''):
+                x = 1
+            elif x == "-":
+                x = -1
+            else:
+                pass
+
+            coefficients.append(x)
 
         try:
             coefficients = [float(x) for x in coefficients]
@@ -112,7 +122,7 @@ class App():
 
         return matrices
 
-    def solve_cramer_method(self, matrices):
+    def get_solution_cramer_method(self, matrices) -> list:
         solution = []
 
         main_determinant = np.linalg.det(matrices["coefficients"])
@@ -129,20 +139,44 @@ class App():
 
         return solution
 
+    def solve(self, equations) -> dict:
+        equations_formatted = self.analyze_equations(equations)
+
+        matrices = self.get_matrices(equations_formatted)
+
+        solution = self.get_solution_cramer_method(matrices)
+
+        rv = {
+            "input": {
+                "equations_str": equations,
+                "equations_formatted": equations_formatted,
+                "matrices": matrices,
+            },
+            "solution": solution,
+        }
+
+        return rv 
         
 
-if __name__ == "__main__":
-    app = App()
+if __name__ == "__main__":  
+    solver = Solver()
 
-    equations = [
-        "-100x+50z-2.1y+55t=0",
-        "-340x-2.1y=22",
-        "-550x-1.1y+34t=44",
-        "-66x+66z-0.1y+0t=111",
-    ]
+    num = int(input("How many equations: "))
 
-    equations = app.analyze_equations(equations)
+    equations = []
+    for i in range(num):
+        x = input(f"{i+1}: ")
+        equations.append(x)
 
-    matrices = app.get_matrices(equations)
+    # equations = [
+    #     "x-z-2.1y+10t=0",
+    #     "-4x-2.1y=22",
+    #     "-1x-1.1y+4t=4",
+    #     "-6x+16.2z-0.1y+0t=-20",
+    # ]
 
-    app.solve_cramer_method(matrices)
+    #[['t', -1.2350579150579164], ['x', -2.3589189189189215], ['y', -5.983011583011583], ['z', -2.1451737451737465]]
+
+    output = solver.solve(equations)
+    print(output["solution"])
+    
