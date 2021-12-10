@@ -125,7 +125,7 @@ class App():
             
             var_value = (partial_determinant/main_determinant)
 
-            solution.append([var, partial_determinant])
+            solution.append([var, var_value])
 
         return solution
 
