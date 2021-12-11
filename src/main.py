@@ -2,7 +2,7 @@ import re
 import itertools
 import numpy as np
 
-class EquationNotSolveable(Exception):
+class EquationsNotSolveable(Exception):
     pass
 
 
@@ -27,7 +27,7 @@ class Solver():
         is_unsolvable = self.is_set_of_equations_unsolvable(variables_unique, cleaned_equations)
 
         if is_unsolvable:
-            raise EquationNotSolveable("Not enough equations")
+            raise EquationsNotSolveable("Not enough equations")
 
         return cleaned_equations
 
@@ -133,7 +133,7 @@ class Solver():
         main_determinant = np.linalg.det(matrices["coefficients"])
 
         if main_determinant == 0:
-            raise EquationNotSolveable("Main determinant is equal to 0, no solutions or infinetly many solutions exist")
+            raise EquationsNotSolveable("Main determinant is equal to 0, no solutions or infinetly many solutions exist")
 
         for index, var in enumerate(matrices['variables']):
             substituted_matrix = matrices["coefficients"].copy()
