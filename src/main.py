@@ -2,6 +2,10 @@ import re
 import itertools
 import numpy as np
 
+class EquationNotSolveable(Exception):
+    pass
+
+
 class Solver():
     def __init__(self) -> None:
         pass
@@ -22,7 +26,8 @@ class Solver():
 
         is_unsolvable = self.is_set_of_equations_unsolvable(variables_unique, cleaned_equations)
 
-        assert is_unsolvable == False, "This set of equations is not solvable"
+        if is_unsolvable:
+            raise EquationNotSolveable("Not enough equations")
 
         return cleaned_equations
 
@@ -126,6 +131,9 @@ class Solver():
         solution = []
 
         main_determinant = np.linalg.det(matrices["coefficients"])
+
+        if main_determinant == 0:
+            raise EquationNotSolveable("Main determinant is equal to 0, no solutions or infinetly many solutions exist")
 
         for index, var in enumerate(matrices['variables']):
             substituted_matrix = matrices["coefficients"].copy()
